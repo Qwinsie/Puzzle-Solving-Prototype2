@@ -5,91 +5,107 @@ using System.Linq;
 
 public class PuzzleBase : MonoBehaviour
 {
-    private bool IsVisiterMode = false;
+    private bool IsVisitorMode = false;
     private bool IsPuzzleSolved = false;
 
     public GameObject objectToSpawnPrefab;
     public PuzzleCollider spherePrefab;
 
     private List<GameObject> PuzzlePieces = new();
-    private List<PuzzleCollider> PuzzlePieceSpheres = new();
-    public static List<Vector3> Colliders = new();
+    private Dictionary<PuzzleCollider, GameObject> PuzzlePieceSpheres = new();
+    // private List<Vector3> Colliders = new();
     private Dictionary<PuzzleCollider, bool> _pieces = new();
 
-    public void startPosition()
+    public void StartPosition()
     {
-        IsVisiterMode = true;
+        IsVisitorMode = true;
     }
 
-    public void savePosition()
+    public void SavePosition()
     {
-        List<Vector3> PuzzlePiecesPositions = getPuzzlePiecesPositions();
+        GetPuzzlePiecesPositions();
         // TODO: Save PuzzlePiece Positions in backend
     }
 
-    List<Vector3> getPuzzlePiecesPositions()
+    void GetPuzzlePiecesPositions()
     {
-        RemoveAllSpheres();
+        // RemoveAllSpheres();
         PuzzlePieces.AddRange(GameObject.FindGameObjectsWithTag("puzzlepiece"));
         for (int i = 0; i < PuzzlePieces.Count; i++)
         {
-            CreateSphere(PuzzlePieces[i], PuzzlePieces[i].transform.position, PuzzlePieces[i].transform.localScale, PuzzlePieces[i].transform.rotation);
-            Colliders.Add(PuzzlePieces[i].transform.position);
+            PuzzleCollider collider = CreateSphere(PuzzlePieces[i]);
+            PuzzlePieceSpheres.Add(collider, PuzzlePieces[i].transform.GetChild(0).gameObject);
+            _pieces.Add(collider, false);
         }
 
-        return Colliders;
     }
 
     private void RemoveAllSpheres()
     {
 
-        if (Colliders != null) { Colliders.Clear(); };
-        if (PuzzlePieceSpheres != null)
-        {
-            for (int i = 0; i < PuzzlePieceSpheres.Count; i++)
-            {
-                // TODO: Do not only destroy the script attached to the GameObject, but also the GameObject itself.
-                Destroy(PuzzlePieceSpheres[i]);
-            };
-            PuzzlePieceSpheres.Clear();
-        };
+        // if (PuzzlePieceSpheres != null)
+        // {
+        //     for (int i = 0; i < PuzzlePieceSpheres.Count; i++)
+        //     {
+        //         Destroy(PuzzlePieceSpheres[i].gameObject);
+        //     };
+        //     PuzzlePieceSpheres.Clear();
+        // };
     }
 
-    private void CreateSphere(GameObject puzzlepiece, Vector3 position, Vector3 scale, Quaternion rotation)
+    private PuzzleCollider CreateSphere(GameObject puzzlepiece)
     {
-        PuzzleCollider sphere = Instantiate(spherePrefab, position, rotation);
-        PuzzlePieceSpheres.Add(sphere);
-        _pieces.Add(sphere, false);
+        PuzzleCollider sphere = Instantiate(spherePrefab, puzzlepiece.transform.position, puzzlepiece.transform.rotation);
+
         sphere.SetBase(this);
         sphere.transform.SetParent(this.gameObject.transform);
-        sphere.transform.localScale = scale / 140;
+        sphere.transform.localScale = puzzlepiece.transform.localScale / 140;
+
+        return sphere;
     }
 
-    public bool SetCorrect(PuzzleCollider piece)
+    public bool CheckPuzzlePiece(PuzzleCollider yellow, Collision blue)
     {
-        if (IsVisiterMode)
+        if (IsVisitorMode)
         {
-            if (_pieces.ContainsKey(piece))
+            if (!_pieces.ContainsKey(yellow))
             {
-                Debug.Log(_pieces.All(x => x.Value));
-                _pieces[piece] = true;
+                return false;
+            }
+
+            if (blue == null)
+            {
+                _pieces[yellow] = false;
+                return false;
+            }
+
+            if (!PuzzlePieceSpheres.ContainsKey(yellow))
+            {
+                return false;
+            }
+
+            GameObject collisionObject = PuzzlePieceSpheres[yellow];
+            if (blue.gameObject != collisionObject)
+            {
+                return false;
+            }
+
+            Quaternion AnglePieceRotation = blue.transform.rotation;
+            Quaternion AngleBaseRotation = yellow.transform.rotation;
+            float AngleMarge = 50f;
+            if (Quaternion.Angle(AnglePieceRotation, AngleBaseRotation) < AngleMarge)
+            {
+                _pieces[yellow] = true;
+                CheckPuzzle();
+                return true;
+            }
+            else
+            {
+                _pieces[yellow] = false;
+                return false;
             }
         }
-
-        return CheckPuzzle();
-    }
-
-    public bool SetIncorrect(PuzzleCollider piece)
-    {
-        if (IsVisiterMode)
-        {
-            if (_pieces.ContainsKey(piece))
-            {
-                _pieces[piece] = false;
-            }
-        }
-
-        return CheckPuzzle();
+        return false;
     }
 
     private bool CheckPuzzle()
@@ -102,8 +118,6 @@ public class PuzzleBase : MonoBehaviour
 
         return IsPuzzleSolved;
     }
-
-
 
     IEnumerator DestroyObjects()
     {

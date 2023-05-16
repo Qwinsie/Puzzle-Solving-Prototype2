@@ -19,17 +19,17 @@ public class PuzzleCollider : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+        Debug.Log(collision.gameObject.tag == "puzzlecollider");
         if (collision.gameObject.tag == "puzzlecollider")
         {
-            Quaternion AnglePieceRotation = this.transform.rotation;
-            Quaternion AngleBaseRotation = collision.transform.rotation;
-            float AngleMarge = 50f;
-            if (Quaternion.Angle(AnglePieceRotation, AngleBaseRotation) < AngleMarge)
+            if (_base.CheckPuzzlePiece(this, collision))
             {
-                Debug.Log("Correct Rotation");
-                _base.SetCorrect(this);
+                Debug.Log("Touching");
             }
-            Debug.Log("Touching");
+            else
+            {
+                Debug.Log("Not Touching");
+            }
         }
     }
 
@@ -37,7 +37,7 @@ public class PuzzleCollider : MonoBehaviour
     {
         if (collision.gameObject.tag == "puzzlecollider")
         {
-            _base.SetIncorrect(this);
+            _base.CheckPuzzlePiece(this, null);
             Debug.Log("Not Touching anymore");
         }
     }
