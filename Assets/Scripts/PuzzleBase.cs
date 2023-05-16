@@ -5,40 +5,88 @@ using System.Linq;
 
 public class PuzzleBase : MonoBehaviour
 {
-    private bool visitorMode = false;
-    public GameObject objectToSpawnPrefab;
-    private bool finishedPuzzle = false;
-    public PuzzleCollidor spherePrefab;
-    private GameObject[] PuzzlePieces;
-    public static List<Vector3> Collidors = new List<Vector3>();
-    private Dictionary<PuzzleCollidor, bool> _pieces = new();
+    private bool IsVisiterMode = false;
+    private bool IsPuzzleSolved = false;
 
-    List<Vector3> getPuzzlePiecesPositions () {
-        
-        PuzzlePieces = GameObject.FindGameObjectsWithTag("puzzlepiece");
-        for (int i = 0; i < PuzzlePieces.Length; i++)
-        {
-            CreateSphere(PuzzlePieces[i], PuzzlePieces[i].transform.position,PuzzlePieces[i].transform.localScale, PuzzlePieces[i].transform.rotation );
-            Collidors.Add(PuzzlePieces[i].transform.position);
-        }
-        
-        return Collidors;
+    public GameObject objectToSpawnPrefab;
+    public PuzzleCollider spherePrefab;
+
+    private List<GameObject> PuzzlePieces = new();
+    private List<PuzzleCollider> PuzzlePieceSpheres = new();
+    public static List<Vector3> Colliders = new();
+    private Dictionary<PuzzleCollider, bool> _pieces = new();
+
+    public void startPosition()
+    {
+        IsVisiterMode = true;
     }
 
-    private void CreateSphere (GameObject puzzlepiece, Vector3 position, Vector3 scale, Quaternion rotation)
+    public void savePosition()
     {
-        PuzzleCollidor sphere = Instantiate(spherePrefab, position, rotation);
+        List<Vector3> PuzzlePiecesPositions = getPuzzlePiecesPositions();
+        // TODO: Save PuzzlePiece Positions in backend
+    }
+
+    List<Vector3> getPuzzlePiecesPositions()
+    {
+        RemoveAllSpheres();
+        PuzzlePieces.AddRange(GameObject.FindGameObjectsWithTag("puzzlepiece"));
+        for (int i = 0; i < PuzzlePieces.Count; i++)
+        {
+            CreateSphere(PuzzlePieces[i], PuzzlePieces[i].transform.position, PuzzlePieces[i].transform.localScale, PuzzlePieces[i].transform.rotation);
+            Colliders.Add(PuzzlePieces[i].transform.position);
+        }
+
+        return Colliders;
+    }
+
+    private void RemoveAllSpheres()
+    {
+
+        if (Colliders != null) { Colliders.Clear(); };
+        if (PuzzlePieceSpheres != null)
+        {
+            for (int i = 0; i < PuzzlePieceSpheres.Count; i++)
+            {
+                // TODO: Do not only destroy the script attached to the GameObject, but also the GameObject itself.
+                Destroy(PuzzlePieceSpheres[i]);
+            };
+            PuzzlePieceSpheres.Clear();
+        };
+    }
+
+    private void CreateSphere(GameObject puzzlepiece, Vector3 position, Vector3 scale, Quaternion rotation)
+    {
+        PuzzleCollider sphere = Instantiate(spherePrefab, position, rotation);
+        PuzzlePieceSpheres.Add(sphere);
         _pieces.Add(sphere, false);
         sphere.SetBase(this);
         sphere.transform.SetParent(this.gameObject.transform);
         sphere.transform.localScale = scale / 140;
     }
 
-    public bool SetCorrect(PuzzleCollidor piece)
+    public bool SetCorrect(PuzzleCollider piece)
     {
-        if (_pieces.ContainsKey(piece))
+        if (IsVisiterMode)
         {
-            _pieces[piece] = true;
+            if (_pieces.ContainsKey(piece))
+            {
+                Debug.Log(_pieces.All(x => x.Value));
+                _pieces[piece] = true;
+            }
+        }
+
+        return CheckPuzzle();
+    }
+
+    public bool SetIncorrect(PuzzleCollider piece)
+    {
+        if (IsVisiterMode)
+        {
+            if (_pieces.ContainsKey(piece))
+            {
+                _pieces[piece] = false;
+            }
         }
 
         return CheckPuzzle();
@@ -46,42 +94,37 @@ public class PuzzleBase : MonoBehaviour
 
     private bool CheckPuzzle()
     {
-        finishedPuzzle = _pieces.All(x => x.Value);
-        if (visitorMode)
+        IsPuzzleSolved = _pieces.All(x => x.Value);
+        if (IsPuzzleSolved)
         {
-            // SpawnResultObject(this.gameObject.);
-            // TODO: play animation 
-            Debug.Log("Animation");
+            StartCoroutine(DestroyObjects());
         };
 
-        return finishedPuzzle;
+        return IsPuzzleSolved;
     }
 
-    public void savePosition()
-    {
-        List<Vector3> PuzzlePiecesPositions = getPuzzlePiecesPositions();
-        // Save PuzzlePiece Positions in backend
-    }
 
-    public void startPosition()
-    {
-        Debug.Log("Starting Position");
-        visitorMode = true;
-    }
 
-    private void SpawnResultObject(Collision collision)
+    IEnumerator DestroyObjects()
     {
-        Instantiate(objectToSpawnPrefab,  Vector3.Lerp(this.gameObject.transform.position, collision.transform.position, 0.5f),  Quaternion.identity);
-    }
+        for (int i = 0; i < PuzzlePieces.Count; i++)
+        {
+            StartCoroutine(ScaleDownAnimation(0.5f, PuzzlePieces[i]));
+        }
 
-    IEnumerator DestroyObjects(Collision collision)
-    {
-        StartCoroutine(ScaleDownAnimation(0.5f, this.gameObject)); 
-        StartCoroutine(ScaleDownAnimation(0.5f, collision.gameObject));
+        StartCoroutine(ScaleDownAnimation(0.5f, this.gameObject));
         yield return new WaitForSeconds(0.5f);
         Destroy(this.gameObject);
-        Destroy(collision.gameObject);
-        SpawnResultObject(collision);
+        for (int i = 0; i < PuzzlePieces.Count; i++)
+        {
+            Destroy(PuzzlePieces[i]);
+        }
+        SpawnResultObject();
+    }
+
+    private void SpawnResultObject()
+    {
+        Instantiate(objectToSpawnPrefab, this.gameObject.transform.position, Quaternion.identity);
     }
 
     IEnumerator ScaleDownAnimation(float time, GameObject gameobject)
@@ -94,7 +137,7 @@ public class PuzzleBase : MonoBehaviour
         Quaternion fromRotation = Quaternion.Euler(0, 180, 0);
         Quaternion toRotation = Quaternion.identity;
 
-        while (i<1)
+        while (i < 1)
         {
             i += Time.deltaTime * rate;
             gameobject.transform.localScale = Vector3.Lerp(fromScale, toScale, i);
