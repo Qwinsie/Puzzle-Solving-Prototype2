@@ -54,4 +54,24 @@ public class PuzzleManager : MonoBehaviour
 
         return sphere;
     }
+
+    public void SavePosition()
+    {
+        if (_puzzlebase == null)
+        {
+            return;
+        }
+
+        _puzzlebase.SavePosition();
+    }
+
+    public void StartPosition()
+    {
+        if (_puzzlebase == null)
+        {
+            return;
+        }
+        
+        _puzzlebase.StartPosition();
+    }
 }

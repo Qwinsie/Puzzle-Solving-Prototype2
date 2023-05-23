@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-// using UnityEngine.UI.Button;
+using UnityEngine.UI;
 
 public class PuzzleBase : MonoBehaviour
 {
-    // private Button button;
+    private Button _greenbutton;
+    public Button CorrectPositionbutton;
+    private Button _yellowbutton;
+    public Button StartPositionbutton;
     private PuzzleManager _puzzleManager;
     private bool IsVisitorMode = false;
     private bool IsPuzzleSolved = false;
@@ -16,12 +19,6 @@ public class PuzzleBase : MonoBehaviour
     private Dictionary<PuzzleCollider, GameObject> PuzzlePieceSpheres = new();
     private Dictionary<PuzzleCollider, bool> _pieces = new();
 
-    private void Start() {
-    //     Button button = myButton.getComponent<Button>();
-    //     //next, any of these will work:
-    //     button.onClick += myMethod;
-    //     button.onClick.AddListener(myMethod);
-    }
 
     internal void SetManager(PuzzleManager puzzleManager)
     {
@@ -61,7 +58,7 @@ public class PuzzleBase : MonoBehaviour
     {
         if (PuzzlePieceSpheres != null)
         {
-            foreach(KeyValuePair<PuzzleCollider, GameObject> entry in PuzzlePieceSpheres)
+            foreach (KeyValuePair<PuzzleCollider, GameObject> entry in PuzzlePieceSpheres)
             {
                 Destroy(entry.Key.gameObject);
             }
@@ -131,7 +128,7 @@ public class PuzzleBase : MonoBehaviour
     {
         IsPuzzleSolved = _pieces.All(x => x.Value);
         if (IsPuzzleSolved)
-        { 
+        {
             StartCoroutine(DestroyObjects());
         };
 
@@ -160,7 +157,9 @@ public class PuzzleBase : MonoBehaviour
         if (_puzzleManager.GetResultToSpawnPrefab() == null)
         {
             Debug.LogWarning("Prefab is not assigned");
-        } else {
+        }
+        else
+        {
             GameObject spawn = Instantiate(_puzzleManager.GetResultToSpawnPrefab(), this.gameObject.transform.position, Quaternion.identity);
             spawn.AddComponent<DragAndDrop>();
         }

@@ -278,8 +278,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -4.1, y: 627}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -402, y: 686}
+  m_SizeDelta: {x: 47.33, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &428818359
 MonoBehaviour:
@@ -564,8 +564,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17.02
-  m_fontSizeBase: 17.02
+  m_fontSize: 7.5
+  m_fontSizeBase: 7.5
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -745,8 +745,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -4.1, y: 987}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -402.00003, y: 1046}
+  m_SizeDelta: {x: 47.33, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &741597275
 MonoBehaviour:
@@ -792,8 +792,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2021445456}
-        m_TargetAssemblyTypeName: PuzzleBase, Assembly-CSharp
+      - m_Target: {fileID: 40152190}
+        m_TargetAssemblyTypeName: PuzzleManager, Assembly-CSharp
         m_MethodName: SavePosition
         m_Mode: 1
         m_Arguments:
@@ -927,8 +927,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17.02
-  m_fontSizeBase: 17.02
+  m_fontSize: 7.5
+  m_fontSizeBase: 7.5
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1146,8 +1146,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17.02
-  m_fontSizeBase: 17.02
+  m_fontSize: 7.5
+  m_fontSizeBase: 7.5
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1233,8 +1233,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -4.1, y: 806}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -402.00003, y: 865}
+  m_SizeDelta: {x: 47.33, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1066758190
 MonoBehaviour:
@@ -1280,8 +1280,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2021445456}
-        m_TargetAssemblyTypeName: PuzzleBase, Assembly-CSharp
+      - m_Target: {fileID: 40152190}
+        m_TargetAssemblyTypeName: PuzzleManager, Assembly-CSharp
         m_MethodName: StartPosition
         m_Mode: 1
         m_Arguments:
@@ -1367,8 +1367,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -4.1, y: 437}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: -402.00003, y: 496}
+  m_SizeDelta: {x: 47.33, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1306309847
 MonoBehaviour:
@@ -1633,8 +1633,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 17.02
-  m_fontSizeBase: 17.02
+  m_fontSize: 7.5
+  m_fontSizeBase: 7.5
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -1683,17 +1683,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1985143403}
   m_CullTransparentMesh: 1
---- !u!114 &2021445456 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 5459432911365827175, guid: 969661e4b72bf2544b5c64882c2bebd8, type: 3}
-  m_PrefabInstance: {fileID: 5459432911507137847}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57152b232ebc52b4f9324b362bd2b037, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &3028629120019986955
 PrefabInstance:
   m_ObjectHideFlags: 0
