@@ -6,6 +6,7 @@ using UnityEngine;
 public class PuzzleCollider : MonoBehaviour
 {
     private PuzzleBase _base;
+    private bool IsCorrect; 
 
     internal void SetBase(PuzzleBase puzzleBase)
     {
@@ -19,26 +20,32 @@ public class PuzzleCollider : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log(collision.gameObject.tag == "puzzlecollider");
-        if (collision.gameObject.tag == "puzzlecollider")
+        if(!_base.GetIsPuzzleSolved())
         {
-            if (_base.CheckPuzzlePiece(this, collision))
+            if (collision.gameObject.tag == "puzzlecollider")
             {
-                Debug.Log("Touching");
-            }
-            else
-            {
-                Debug.Log("Not Touching");
+                if (_base.CheckPuzzlePiece(this, collision))
+                {
+                    Debug.Log("Correct");
+                }
+                else
+                {
+                    Debug.Log("Incorrect");
+                }
             }
         }
     }
 
     void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.tag == "puzzlecollider")
+        if(!_base.GetIsPuzzleSolved())
         {
-            _base.CheckPuzzlePiece(this, null);
-            Debug.Log("Not Touching anymore");
+            if (collision.gameObject.tag == "puzzlecollider")
+            {
+                _base.CheckPuzzlePiece(this, null);
+                Debug.Log("Not correct anymore");
+                IsCorrect = false;
+            }
         }
     }
 }

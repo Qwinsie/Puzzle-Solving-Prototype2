@@ -5,8 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - 3DObject
-  - puzzlecollidor
   - puzzlepiece
+  - puzzlecollider
   layers:
   - Default
   - TransparentFX

@@ -5,7 +5,7 @@ using UnityEngine;
 public class IdleAnimation : MonoBehaviour
 {
 
-    private Renderer renderer;
+    private new Renderer renderer;
     Color colourEnd;
     Color colourStart;
     bool forward = true;

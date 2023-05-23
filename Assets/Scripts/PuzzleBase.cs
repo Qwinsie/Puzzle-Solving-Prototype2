@@ -2,23 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+// using UnityEngine.UI.Button;
 
 public class PuzzleBase : MonoBehaviour
 {
+    // private Button button;
+    private PuzzleManager _puzzleManager;
     private bool IsVisitorMode = false;
     private bool IsPuzzleSolved = false;
-
-    public GameObject objectToSpawnPrefab;
     public PuzzleCollider spherePrefab;
 
     private List<GameObject> PuzzlePieces = new();
     private Dictionary<PuzzleCollider, GameObject> PuzzlePieceSpheres = new();
-    // private List<Vector3> Colliders = new();
     private Dictionary<PuzzleCollider, bool> _pieces = new();
 
+    private void Start() {
+    //     Button button = myButton.getComponent<Button>();
+    //     //next, any of these will work:
+    //     button.onClick += myMethod;
+    //     button.onClick.AddListener(myMethod);
+    }
+
+    internal void SetManager(PuzzleManager puzzleManager)
+    {
+        _puzzleManager = puzzleManager;
+    }
     public void StartPosition()
     {
         IsVisitorMode = true;
+    }
+
+    public bool GetIsPuzzleSolved()
+    {
+        return IsPuzzleSolved;
     }
 
     public void SavePosition()
@@ -29,11 +45,12 @@ public class PuzzleBase : MonoBehaviour
 
     void GetPuzzlePiecesPositions()
     {
-        // RemoveAllSpheres();
+        RemoveAllSpheres();
         PuzzlePieces.AddRange(GameObject.FindGameObjectsWithTag("puzzlepiece"));
         for (int i = 0; i < PuzzlePieces.Count; i++)
         {
             PuzzleCollider collider = CreateSphere(PuzzlePieces[i]);
+            // TODO: Do not look on the first child.
             PuzzlePieceSpheres.Add(collider, PuzzlePieces[i].transform.GetChild(0).gameObject);
             _pieces.Add(collider, false);
         }
@@ -42,21 +59,21 @@ public class PuzzleBase : MonoBehaviour
 
     private void RemoveAllSpheres()
     {
-
-        // if (PuzzlePieceSpheres != null)
-        // {
-        //     for (int i = 0; i < PuzzlePieceSpheres.Count; i++)
-        //     {
-        //         Destroy(PuzzlePieceSpheres[i].gameObject);
-        //     };
-        //     PuzzlePieceSpheres.Clear();
-        // };
+        if (PuzzlePieceSpheres != null)
+        {
+            foreach(KeyValuePair<PuzzleCollider, GameObject> entry in PuzzlePieceSpheres)
+            {
+                Destroy(entry.Key.gameObject);
+            }
+            PuzzlePieceSpheres.Clear();
+            PuzzlePieces.Clear();
+            _pieces.Clear();
+        };
     }
 
     private PuzzleCollider CreateSphere(GameObject puzzlepiece)
     {
         PuzzleCollider sphere = Instantiate(spherePrefab, puzzlepiece.transform.position, puzzlepiece.transform.rotation);
-
         sphere.SetBase(this);
         sphere.transform.SetParent(this.gameObject.transform);
         sphere.transform.localScale = puzzlepiece.transform.localScale / 140;
@@ -95,12 +112,14 @@ public class PuzzleBase : MonoBehaviour
             float AngleMarge = 50f;
             if (Quaternion.Angle(AnglePieceRotation, AngleBaseRotation) < AngleMarge)
             {
+                Debug.Log(1);
                 _pieces[yellow] = true;
                 CheckPuzzle();
                 return true;
             }
             else
             {
+                Debug.Log(2);
                 _pieces[yellow] = false;
                 return false;
             }
@@ -112,7 +131,7 @@ public class PuzzleBase : MonoBehaviour
     {
         IsPuzzleSolved = _pieces.All(x => x.Value);
         if (IsPuzzleSolved)
-        {
+        { 
             StartCoroutine(DestroyObjects());
         };
 
@@ -138,7 +157,13 @@ public class PuzzleBase : MonoBehaviour
 
     private void SpawnResultObject()
     {
-        Instantiate(objectToSpawnPrefab, this.gameObject.transform.position, Quaternion.identity);
+        if (_puzzleManager.GetResultToSpawnPrefab() == null)
+        {
+            Debug.LogWarning("Prefab is not assigned");
+        } else {
+            GameObject spawn = Instantiate(_puzzleManager.GetResultToSpawnPrefab(), this.gameObject.transform.position, Quaternion.identity);
+            spawn.AddComponent<DragAndDrop>();
+        }
     }
 
     IEnumerator ScaleDownAnimation(float time, GameObject gameobject)
